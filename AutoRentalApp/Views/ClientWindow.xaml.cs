@@ -3,8 +3,10 @@ using AutoRentalApp.Models;
 using AutoRentalApp.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace AutoRentalApp.Views
 {
@@ -14,6 +16,21 @@ namespace AutoRentalApp.Views
         private readonly AppDbContext _dbContext;
         private readonly Client _currentClient;
         private readonly User _currentUser;
+
+        // Вспомогательный класс для отображения договоров
+        private class ContractDisplayItem
+        {
+            public int ContractID { get; set; }
+            public string ContractNumber { get; set; }
+            public string CarDisplayName { get; set; }
+            public DateTime StartDateTime { get; set; }
+            public DateTime PlannedEndDateTime { get; set; }
+            public DateTime? ActualEndDateTime { get; set; }
+            public ContractStatus ContractStatus { get; set; }
+            public decimal TotalAmount { get; set; }
+            public int CarID { get; set; }
+            public int CarStatusID { get; set; }
+        }
 
         public ClientWindow(AuthService authService, AppDbContext dbContext)
         {
@@ -31,6 +48,7 @@ namespace AutoRentalApp.Views
 
                 UserNameText.Text = $"Здравствуйте, {_currentUser.FullName}";
 
+                // ИСПРАВЛЕНО: Проверка и создание клиента, если его нет
                 _currentClient = _dbContext.Clients
                     .Include(c => c.User)
                     .FirstOrDefault(c => c.UserID == _currentUser.UserID);
@@ -70,10 +88,15 @@ namespace AutoRentalApp.Views
 
                 LoadClientInfo();
                 LoadContracts();
+
+                // Автоматическое обновление каждые 30 секунд
+                var timer = new System.Windows.Threading.DispatcherTimer();
+                timer.Interval = TimeSpan.FromSeconds(30);
+                timer.Tick += (s, e) => LoadContracts();
+                timer.Start();
             }
             catch (Exception ex)
             {
-                // Показываем ошибку пользователю
                 MessageBox.Show(
                     $"Ошибка инициализации личного кабинета:\n\n{ex.Message}",
                     "Ошибка",
@@ -81,10 +104,7 @@ namespace AutoRentalApp.Views
                     MessageBoxImage.Error
                 );
 
-                this.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    this.Close();
-                }));
+                this.Dispatcher.BeginInvoke(new Action(() => this.Close()));
             }
         }
 
@@ -105,43 +125,124 @@ namespace AutoRentalApp.Views
         {
             try
             {
-                // Безопасная загрузка с проверкой соединения
+                // ИСПРАВЛЕНО: Полная загрузка с включением ВСЕХ связанных данных
                 var contracts = _dbContext.RentalContracts
                     .Include(rc => rc.Car)
                         .ThenInclude(c => c.CarStatus)
                     .Include(rc => rc.ContractStatus)
+                    .Include(rc => rc.Manager)
+                        .ThenInclude(m => m.User)
                     .Where(rc => rc.ClientID == _currentClient.ClientID)
                     .OrderByDescending(rc => rc.StartDateTime)
                     .ToList();
 
-                // Создаём список для отображения
-                var displayContracts = contracts.Select(c => new
-                {
-                    c.ContractNumber,
-                    c.Car.DisplayName,
-                    c.StartDateTime,
-                    c.PlannedEndDateTime,
-                    c.ActualEndDateTime,
-                    c.ContractStatus.StatusName,
-                    c.TotalAmount
-                }).ToList();
+                // Формируем отображаемые данные с безопасной проверкой
+                var displayItems = new List<ContractDisplayItem>();
 
-                ContractsDataGrid.ItemsSource = displayContracts;
+                foreach (var contract in contracts)
+                {
+                    string carDisplayName = "Автомобиль недоступен";
+
+                    if (contract.Car != null)
+                    {
+                        // Безопасное получение названия автомобиля
+                        carDisplayName = !string.IsNullOrWhiteSpace(contract.Car.DisplayName)
+                            ? contract.Car.DisplayName
+                            : $"{contract.Car.Brand} {contract.Car.Model}";
+                    }
+
+                    displayItems.Add(new ContractDisplayItem
+                    {
+                        ContractID = contract.ContractID,
+                        ContractNumber = contract.ContractNumber,
+                        CarDisplayName = carDisplayName,
+                        StartDateTime = contract.StartDateTime,
+                        PlannedEndDateTime = contract.PlannedEndDateTime,
+                        ActualEndDateTime = contract.ActualEndDateTime,
+                        ContractStatus = contract.ContractStatus,
+                        TotalAmount = contract.TotalAmount,
+                        CarID = contract.Car?.CarID ?? 0,
+                        CarStatusID = contract.Car?.CarStatusID ?? 0
+                    });
+                }
+
+                ContractsDataGrid.ItemsSource = displayItems;
+                // УБРАНО: StatusText.Text = ... (элемента нет в XAML)
             }
             catch (Exception ex)
             {
-                // Безопасная обработка ошибки
                 MessageBox.Show(
-                    $"Ошибка загрузки договоров:\n\n{ex.Message}\n\n" +
-                    "Попробуйте обновить страницу или обратитесь к администратору.",
+                    $"Ошибка загрузки договоров:\n{ex.Message}",
                     "Ошибка",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
 
-                this.Dispatcher.BeginInvoke(new Action(() =>
+                ContractsDataGrid.ItemsSource = new List<ContractDisplayItem>();
+                // УБРАНО: StatusText.Text = ... (элемента нет в XAML)
+            }
+        }
+
+        private void DeleteContractButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var item = button?.Tag as ContractDisplayItem;
+
+            if (item == null) return;
+
+            var result = MessageBox.Show(
+                $"Вы уверены, что хотите удалить запись аренды?\n\n" +
+                $"Автомобиль: {item.CarDisplayName}\n" +
+                $"Период: {item.StartDateTime:d} - {item.PlannedEndDateTime:d}\n\n" +
+                "⚠️ ВНИМАНИЕ: Это действие вернёт автомобиль в статус 'свободен' " +
+                "и удалит запись из вашей истории аренды.",
+                "Подтверждение удаления",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
                 {
-                    this.Close();
-                }));
+                    // Находим договор в БД
+                    var contract = _dbContext.RentalContracts
+                        .Include(rc => rc.Car)
+                        .FirstOrDefault(rc => rc.ContractID == item.ContractID);
+
+                    if (contract == null)
+                    {
+                        MessageBox.Show("Договор не найден в базе данных", "Ошибка",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    // Обновляем статус автомобиля на "свободен" (1)
+                    if (contract.Car != null && contract.Car.CarStatusID != 1)
+                    {
+                        contract.Car.CarStatusID = 1;
+                    }
+
+                    // Удаляем договор
+                    _dbContext.RentalContracts.Remove(contract);
+                    _dbContext.SaveChanges();
+
+                    // Обновляем список
+                    LoadContracts();
+
+                    MessageBox.Show(
+                        $"Запись аренды успешно удалена.\n" +
+                        $"Автомобиль '{item.CarDisplayName}' теперь свободен для аренды.",
+                        "Успех",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        $"Ошибка при удалении записи:\n{ex.Message}",
+                        "Ошибка",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
             }
         }
 

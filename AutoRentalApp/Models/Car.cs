@@ -81,13 +81,32 @@ namespace AutoRentalApp.Models
         public string VIN { get; set; }
 
         [Required]
-        [Column("carstatusid")] 
+        [Column("carstatusid")]
         public int CarStatusID { get; set; }
 
         [ForeignKey("CarStatusID")]
         public virtual CarStatus CarStatus { get; set; }
 
+        // ИСПРАВЛЕНО: Безопасное формирование названия с проверкой на пустые значения
         [NotMapped]
-        public string DisplayName => $"{Brand} {Model} ({PlateNumber})";
+        public string DisplayName
+        {
+            get
+            {
+                // Безопасное формирование названия с проверкой на пустые значения
+                var brand = !string.IsNullOrWhiteSpace(Brand) ? Brand : "Неизвестно";
+                var model = !string.IsNullOrWhiteSpace(Model) ? Model : "";
+                var plate = !string.IsNullOrWhiteSpace(PlateNumber) ? PlateNumber : "";
+
+                if (!string.IsNullOrWhiteSpace(model) && !string.IsNullOrWhiteSpace(plate))
+                    return $"{brand} {model} ({plate})";
+                else if (!string.IsNullOrWhiteSpace(model))
+                    return $"{brand} {model}";
+                else if (!string.IsNullOrWhiteSpace(plate))
+                    return $"{brand} ({plate})";
+                else
+                    return brand;
+            }
+        }
     }
 }

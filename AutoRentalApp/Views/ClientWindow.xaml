@@ -86,16 +86,30 @@
                     </StackPanel>
 
                     <DataGrid Grid.Row="1" x:Name="ContractsDataGrid" 
-                              AutoGenerateColumns="False" IsReadOnly="True"
-                              SelectionMode="Single" BorderBrush="#E0E0E0" BorderThickness="1">
+          AutoGenerateColumns="False" IsReadOnly="False"
+          SelectionMode="Single" BorderBrush="#E0E0E0" BorderThickness="1">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="№ договора" Binding="{Binding ContractNumber}" Width="100"/>
-                            <DataGridTextColumn Header="Автомобиль" Binding="{Binding Car.DisplayName}" Width="200"/>
+                            <DataGridTextColumn Header="Автомобиль" Binding="{Binding CarDisplayName}" Width="200"/>
                             <DataGridTextColumn Header="Дата выдачи" Binding="{Binding StartDateTime, StringFormat=d}" Width="120"/>
                             <DataGridTextColumn Header="Возврат" Binding="{Binding PlannedEndDateTime, StringFormat=d}" Width="120"/>
                             <DataGridTextColumn Header="Факт. возврат" Binding="{Binding ActualEndDateTime, StringFormat=d}" Width="120"/>
                             <DataGridTextColumn Header="Статус" Binding="{Binding ContractStatus.StatusName}" Width="120"/>
                             <DataGridTextColumn Header="Сумма" Binding="{Binding TotalAmount, StringFormat=N2}" Width="100"/>
+                            <DataGridTemplateColumn Header="Действия" Width="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="🗑 Удалить" 
+                            Click="DeleteContractButton_Click" 
+                            Tag="{Binding}" 
+                            Background="#FF5252" 
+                            Foreground="White"
+                            BorderThickness="0"
+                            Padding="5,2"
+                            Cursor="Hand"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

@@ -28,17 +28,20 @@ namespace AutoRentalApp.Views
             {
                 StatusText.Text = "Загрузка данных...";
 
+                // ИСПРАВЛЕНО: Загружаем ТОЛЬКО автомобили со статусом "свободен" (1)
                 _allCars = _dbContext.Cars
                     .Include(c => c.CarStatus)
                     .Where(c => c.CarStatusID == 1) // Только свободные автомобили
+                    .OrderBy(c => c.DailyPrice)
                     .ToList();
 
+                CarsDataGrid.ItemsSource = null;
                 CarsDataGrid.ItemsSource = _allCars;
-                StatusText.Text = $"Доступно автомобилей: {_allCars.Count}";
+                StatusText.Text = $"Доступно: {_allCars.Count} автомобилей";
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
+                MessageBox.Show($"Ошибка загрузки: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 StatusText.Text = "Ошибка загрузки";
             }
