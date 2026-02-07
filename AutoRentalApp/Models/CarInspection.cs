@@ -27,7 +27,6 @@ namespace AutoRentalApp.Models
         [Column("notes")]
         public string Notes { get; set; }
 
-        // ИСПРАВЛЕНО: Заменено Mileage на DamageCost
         [Required]
         [Column("damagecost")]
         public decimal DamageCost { get; set; }

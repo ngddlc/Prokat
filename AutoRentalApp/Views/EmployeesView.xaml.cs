@@ -122,7 +122,8 @@ namespace AutoRentalApp.Views
                 $"Вы уверены, что хотите удалить сотрудника {employee.User?.FullName ?? "Неизвестный"}?\n\n" +
                 "⚠️ ВНИМАНИЕ: Будут автоматически удалены:\n" +
                 "• Все договоры аренды, оформленные этим менеджером\n" +
-                "• Все осмотры автомобилей по этим договорам",
+                "• Все осмотры автомобилей по этим договорам\n" +
+                "• Запись пользователя из системы",
                 "Подтверждение удаления",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
@@ -131,7 +132,7 @@ namespace AutoRentalApp.Views
             {
                 try
                 {
-                    // Получаем все договоры менеджера
+                    // Получаем всех договоров менеджера
                     var contracts = _dbContext.RentalContracts
                         .Where(rc => rc.ManagerID == employee.EmployeeID)
                         .ToList();
@@ -146,12 +147,21 @@ namespace AutoRentalApp.Views
                     _dbContext.CarInspections.RemoveRange(inspections);
                     _dbContext.RentalContracts.RemoveRange(contracts);
                     _dbContext.Employees.Remove(employee);
+
+                    // ИСПРАВЛЕНО: Удаляем запись пользователя из таблицы users
+                    var user = _dbContext.Users.Find(employee.UserID);
+                    if (user != null)
+                    {
+                        _dbContext.Users.Remove(user);
+                    }
+
                     _dbContext.SaveChanges();
 
                     LoadEmployees();
                     MessageBox.Show($"Сотрудник и все связанные данные успешно удалены.\n" +
                         $"Удалено договоров: {contracts.Count}\n" +
-                        $"Удалено осмотров: {inspections.Count}",
+                        $"Удалено осмотров: {inspections.Count}\n" +
+                        $"Удалена запись пользователя из системы",
                         "Успех",
                         MessageBoxButton.OK,
                         MessageBoxImage.Information);

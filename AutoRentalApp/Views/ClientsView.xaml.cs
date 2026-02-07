@@ -118,10 +118,11 @@ namespace AutoRentalApp.Views
             if (client == null) return;
 
             var result = MessageBox.Show(
-                $"Вы уверены, что хотите удалить клиента {client.User?.FullName ?? "Неизвестный"}?\n\n" +
-                "ВНИМАНИЕ: Будут автоматически удалены:\n" +
+                $"Вы уверены, что хотите удалить клиента {client.User.FullName}?\n\n" +
+                "⚠️ ВНИМАНИЕ: Будут автоматически удалены:\n" +
                 "• Все договоры аренды этого клиента\n" +
-                "• Все осмотры автомобилей по этим договорам",
+                "• Все осмотры автомобилей по этим договорам\n" +
+                "• Запись пользователя из системы",
                 "Подтверждение удаления",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
@@ -130,7 +131,7 @@ namespace AutoRentalApp.Views
             {
                 try
                 {
-                    // Получаем все договоры клиента
+                    // Получаем всех договоров клиента
                     var contracts = _dbContext.RentalContracts
                         .Where(rc => rc.ClientID == client.ClientID)
                         .ToList();
@@ -138,19 +139,28 @@ namespace AutoRentalApp.Views
                     // Собираем все осмотры по этим договорам
                     var inspectionIds = contracts.Select(c => c.ContractID).ToList();
                     var inspections = _dbContext.CarInspections
-                    .Where(ci => contracts.Select(c => c.ContractID).Contains(ci.ContractID))
-                    .ToList();
+                        .Where(ci => inspectionIds.Contains(ci.ContractID))
+                        .ToList();
 
                     // Удаляем в правильном порядке: сначала осмотры, потом договоры
                     _dbContext.CarInspections.RemoveRange(inspections);
                     _dbContext.RentalContracts.RemoveRange(contracts);
                     _dbContext.Clients.Remove(client);
+
+                    // ИСПРАВЛЕНО: Удаляем запись пользователя из таблицы users
+                    var user = _dbContext.Users.Find(client.UserID);
+                    if (user != null)
+                    {
+                        _dbContext.Users.Remove(user);
+                    }
+
                     _dbContext.SaveChanges();
 
                     LoadClients();
                     MessageBox.Show($"Клиент и все связанные данные успешно удалены.\n" +
                         $"Удалено договоров: {contracts.Count}\n" +
-                        $"Удалено осмотров: {inspections.Count}",
+                        $"Удалено осмотров: {inspections.Count}\n" +
+                        $"Удалена запись пользователя из системы",
                         "Успех",
                         MessageBoxButton.OK,
                         MessageBoxImage.Information);
