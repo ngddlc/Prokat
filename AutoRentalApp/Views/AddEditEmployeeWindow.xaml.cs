@@ -22,7 +22,7 @@ namespace AutoRentalApp.Views
             _dbContext = dbContext;
             _employeeToEdit = employee;
 
-            // Загрузка ролей в выпадающий список (только менеджер и администратор)
+            // Загрузка ролей в выпадающий список
             var roles = _dbContext.Roles
                 .Where(r => r.RoleName == "менеджер" || r.RoleName == "администратор")
                 .ToList();

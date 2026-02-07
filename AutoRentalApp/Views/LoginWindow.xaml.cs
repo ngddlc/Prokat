@@ -88,7 +88,7 @@ namespace AutoRentalApp.Views
                         break;
 
                     case "клиент":
-                        // Проверяем наличие клиента ДО создания окна
+                        // Проверяем наличие клиента до создания окна
                         var clientExists = _dbContext.Clients.Any(c => c.UserID == user.UserID);
 
                         if (!clientExists)

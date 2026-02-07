@@ -92,7 +92,7 @@ namespace AutoRentalApp.Views
 
         private void ClientsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Действия в строке деталей (кнопки Редактировать/Удалить)
+            // кнопки Редактировать Удалить
         }
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
@@ -119,7 +119,7 @@ namespace AutoRentalApp.Views
 
             var result = MessageBox.Show(
                 $"Вы уверены, что хотите удалить клиента {client.User.FullName}?\n\n" +
-                "⚠️ ВНИМАНИЕ: Будут автоматически удалены:\n" +
+                "ВНИМАНИЕ: Будут автоматически удалены:\n" +
                 "• Все договоры аренды этого клиента\n" +
                 "• Все осмотры автомобилей по этим договорам\n" +
                 "• Запись пользователя из системы",
@@ -142,12 +142,10 @@ namespace AutoRentalApp.Views
                         .Where(ci => inspectionIds.Contains(ci.ContractID))
                         .ToList();
 
-                    // Удаляем в правильном порядке: сначала осмотры, потом договоры
                     _dbContext.CarInspections.RemoveRange(inspections);
                     _dbContext.RentalContracts.RemoveRange(contracts);
                     _dbContext.Clients.Remove(client);
 
-                    // ИСПРАВЛЕНО: Удаляем запись пользователя из таблицы users
                     var user = _dbContext.Users.Find(client.UserID);
                     if (user != null)
                     {

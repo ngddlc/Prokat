@@ -19,7 +19,6 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="20,0,0,0">
-                <TextBlock Text="🚗" FontSize="32" Margin="0,0,10,0"/>
                 <TextBlock Text="Панель администратора" FontSize="20" FontWeight="Bold" 
                            Foreground="White" VerticalAlignment="Center"/>
             </StackPanel>
@@ -42,13 +41,13 @@
             <!-- Меню навигации -->
             <Border Grid.Column="0" Background="#F5F7FA" CornerRadius="8" Padding="5">
                 <StackPanel>
-                    <Button Content="🏠 Главная" Style="{StaticResource PrimaryButton}" 
+                    <Button Content="Главная" Style="{StaticResource PrimaryButton}" 
                             Click="HomeButton_Click" Background="#673AB7" Margin="0,5,0,5" Height="45"/>
-                    <Button Content="👥 Клиенты" Style="{StaticResource PrimaryButton}" 
+                    <Button Content="Клиенты" Style="{StaticResource PrimaryButton}" 
                             Click="ClientsButton_Click" Background="#4CAF50" Margin="0,5,0,5" Height="45"/>
-                    <Button Content="🚗 Автомобили" Style="{StaticResource PrimaryButton}" 
+                    <Button Content="Автомобили" Style="{StaticResource PrimaryButton}" 
                             Click="CarsButton_Click" Background="#2196F3" Margin="0,5,0,5" Height="45"/>
-                    <Button Content="👥 Сотрудники" Style="{StaticResource PrimaryButton}" 
+                    <Button Content="Сотрудники" Style="{StaticResource PrimaryButton}" 
                             Click="EmployeesButton_Click" Background="#00BCD4" Margin="0,5,0,5" Height="45"/>
                 </StackPanel>
             </Border>

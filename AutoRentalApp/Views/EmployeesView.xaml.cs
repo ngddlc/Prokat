@@ -120,7 +120,7 @@ namespace AutoRentalApp.Views
 
             var result = MessageBox.Show(
                 $"Вы уверены, что хотите удалить сотрудника {employee.User?.FullName ?? "Неизвестный"}?\n\n" +
-                "⚠️ ВНИМАНИЕ: Будут автоматически удалены:\n" +
+                "ВНИМАНИЕ: Будут автоматически удалены:\n" +
                 "• Все договоры аренды, оформленные этим менеджером\n" +
                 "• Все осмотры автомобилей по этим договорам\n" +
                 "• Запись пользователя из системы",
@@ -148,7 +148,6 @@ namespace AutoRentalApp.Views
                     _dbContext.RentalContracts.RemoveRange(contracts);
                     _dbContext.Employees.Remove(employee);
 
-                    // ИСПРАВЛЕНО: Удаляем запись пользователя из таблицы users
                     var user = _dbContext.Users.Find(employee.UserID);
                     if (user != null)
                     {

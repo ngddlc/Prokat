@@ -50,9 +50,6 @@
                         Style="{StaticResource PrimaryButton}" Width="120" Height="35" Margin="20,0,0,0"/>
             </Grid>
 
-            <!-- Дополнительная информация -->
-            <TextBlock Text="Дополнительная информация" FontSize="16" FontWeight="SemiBold" 
-                       Foreground="#2196F3" Margin="0,15,0,10"/>
 
             <TextBlock Text="Комментарий (необязательно):" Style="{StaticResource FormLabel}"/>
             <TextBox x:Name="CommentBox" Style="{StaticResource FormTextBox}" FontSize="14" Height="80" TextWrapping="Wrap" AcceptsReturn="True"/>

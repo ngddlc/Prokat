@@ -192,7 +192,7 @@ namespace AutoRentalApp.Views
             {
                 if (_carToEdit == null)
                 {
-                    // Проверка уникальности гос. номера и VIN
+                    // Проверка уникальности номера и VIN
                     if (_dbContext.Cars.Any(c => c.PlateNumber == plateNumber))
                     {
                         PlateNumberError.Text = "Автомобиль с таким гос. номером уже существует";

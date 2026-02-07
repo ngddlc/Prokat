@@ -48,12 +48,10 @@ namespace AutoRentalApp.Views
 
                 UserNameText.Text = $"Здравствуйте, {_currentUser.FullName}";
 
-                // ИСПРАВЛЕНО: Проверка и создание клиента, если его нет
                 _currentClient = _dbContext.Clients
                     .Include(c => c.User)
                     .FirstOrDefault(c => c.UserID == _currentUser.UserID);
 
-                // Если клиента нет, но роль клиента - создаем запись
                 if (_currentClient == null && _currentUser.RoleID == 3)
                 {
                     _currentClient = new Client
@@ -125,7 +123,6 @@ namespace AutoRentalApp.Views
         {
             try
             {
-                // ИСПРАВЛЕНО: Полная загрузка с включением ВСЕХ связанных данных
                 var contracts = _dbContext.RentalContracts
                     .Include(rc => rc.Car)
                         .ThenInclude(c => c.CarStatus)
@@ -136,7 +133,6 @@ namespace AutoRentalApp.Views
                     .OrderByDescending(rc => rc.StartDateTime)
                     .ToList();
 
-                // Формируем отображаемые данные с безопасной проверкой
                 var displayItems = new List<ContractDisplayItem>();
 
                 foreach (var contract in contracts)
@@ -145,7 +141,7 @@ namespace AutoRentalApp.Views
 
                     if (contract.Car != null)
                     {
-                        // Безопасное получение названия автомобиля
+                        // получение названия автомобиля
                         carDisplayName = !string.IsNullOrWhiteSpace(contract.Car.DisplayName)
                             ? contract.Car.DisplayName
                             : $"{contract.Car.Brand} {contract.Car.Model}";
@@ -167,7 +163,6 @@ namespace AutoRentalApp.Views
                 }
 
                 ContractsDataGrid.ItemsSource = displayItems;
-                // УБРАНО: StatusText.Text = ... (элемента нет в XAML)
             }
             catch (Exception ex)
             {
@@ -178,7 +173,6 @@ namespace AutoRentalApp.Views
                     MessageBoxImage.Error);
 
                 ContractsDataGrid.ItemsSource = new List<ContractDisplayItem>();
-                // УБРАНО: StatusText.Text = ... (элемента нет в XAML)
             }
         }
 
@@ -193,7 +187,7 @@ namespace AutoRentalApp.Views
                 $"Вы уверены, что хотите удалить запись аренды?\n\n" +
                 $"Автомобиль: {item.CarDisplayName}\n" +
                 $"Период: {item.StartDateTime:d} - {item.PlannedEndDateTime:d}\n\n" +
-                "⚠️ ВНИМАНИЕ: Это действие вернёт автомобиль в статус 'свободен' " +
+                "ВНИМАНИЕ: Это действие вернёт автомобиль в статус 'свободен' " +
                 "и удалит запись из вашей истории аренды.",
                 "Подтверждение удаления",
                 MessageBoxButton.YesNo,
@@ -215,7 +209,7 @@ namespace AutoRentalApp.Views
                         return;
                     }
 
-                    // Обновляем статус автомобиля на "свободен" (1)
+                    // Обновляем статус автомобиля на свободен
                     if (contract.Car != null && contract.Car.CarStatusID != 1)
                     {
                         contract.Car.CarStatusID = 1;
@@ -270,7 +264,6 @@ namespace AutoRentalApp.Views
             var catalogWindow = new ClientCarsCatalog(_dbContext, _currentClient);
             catalogWindow.ShowDialog();
 
-            // Обновляем список договоров после аренды
             LoadContracts();
         }
     }

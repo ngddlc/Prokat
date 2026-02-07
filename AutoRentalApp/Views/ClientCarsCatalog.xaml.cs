@@ -28,7 +28,6 @@ namespace AutoRentalApp.Views
             {
                 StatusText.Text = "Загрузка данных...";
 
-                // ИСПРАВЛЕНО: Загружаем ТОЛЬКО автомобили со статусом "свободен" (1)
                 _allCars = _dbContext.Cars
                     .Include(c => c.CarStatus)
                     .Where(c => c.CarStatusID == 1) // Только свободные автомобили
@@ -112,7 +111,6 @@ namespace AutoRentalApp.Views
                 var rentWindow = new ClientRentCarWindow(_dbContext, _currentClient, car);
                 rentWindow.ShowDialog();
 
-                // Обновляем список после аренды
                 LoadCars();
             }
         }

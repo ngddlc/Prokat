@@ -41,7 +41,6 @@ namespace AutoRentalApp.Views
 
         private void LoadClientData()
         {
-            // ИСПРАВЛЕНО: Безопасная загрузка с проверкой на существование
             _userToEdit = _dbContext.Users
                 .FirstOrDefault(u => u.UserID == _clientToEdit.UserID);
 
@@ -60,7 +59,7 @@ namespace AutoRentalApp.Views
             LastNameBox.Text = _userToEdit.LastName;
             FirstNameBox.Text = _userToEdit.FirstName;
             LoginBox.Text = _userToEdit.Login;
-            LoginBox.IsEnabled = false; // Логин нельзя изменить
+            LoginBox.IsEnabled = false;
 
             PassportBox.Text = _clientToEdit.PassportNumber;
             LicenseBox.Text = _clientToEdit.DriverLicenseNumber;
@@ -162,11 +161,11 @@ namespace AutoRentalApp.Views
                         FirstName = firstName,
                         Login = login,
                         PasswordHash = passwordHash,
-                        RoleID = 3 // Роль "клиент"
+                        RoleID = 3 
                     };
 
                     _dbContext.Users.Add(newUser);
-                    _dbContext.SaveChanges(); // Сохраняем пользователя ДО создания клиента
+                    _dbContext.SaveChanges(); // Сохраняем пользователя до создания клиента
 
                     var newClient = new Client
                     {
@@ -181,7 +180,6 @@ namespace AutoRentalApp.Views
                 }
                 else
                 {
-                    // ИСПРАВЛЕНО: Проверка существования пользователя перед редактированием
                     if (_userToEdit == null)
                     {
                         _userToEdit = _dbContext.Users.Find(_clientToEdit.UserID);
@@ -194,7 +192,6 @@ namespace AutoRentalApp.Views
                     // Редактирование существующего клиента
                     _userToEdit.LastName = lastName;
                     _userToEdit.FirstName = firstName;
-                    // Логин не изменяется (заблокирован в интерфейсе)
 
                     _clientToEdit.PassportNumber = passport;
                     _clientToEdit.DriverLicenseNumber = license;
@@ -210,7 +207,6 @@ namespace AutoRentalApp.Views
             }
             catch (Exception ex)
             {
-                // ИСПРАВЛЕНО: Детальное отображение ошибок
                 string errorMessage = $"Ошибка при сохранении данных:\n{ex.Message}";
 
                 if (ex.InnerException != null)

@@ -19,7 +19,6 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="20,0,0,0">
-                <TextBlock Text="👤" FontSize="32" Margin="0,0,10,0"/>
                 <TextBlock Text="Личный кабинет" FontSize="20" FontWeight="Bold" 
                            Foreground="White" VerticalAlignment="Center"/>
             </StackPanel>

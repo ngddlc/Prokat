@@ -87,13 +87,11 @@ namespace AutoRentalApp.Models
         [ForeignKey("CarStatusID")]
         public virtual CarStatus CarStatus { get; set; }
 
-        // ИСПРАВЛЕНО: Безопасное формирование названия с проверкой на пустые значения
         [NotMapped]
         public string DisplayName
         {
             get
             {
-                // Безопасное формирование названия с проверкой на пустые значения
                 var brand = !string.IsNullOrWhiteSpace(Brand) ? Brand : "Неизвестно";
                 var model = !string.IsNullOrWhiteSpace(Model) ? Model : "";
                 var plate = !string.IsNullOrWhiteSpace(PlateNumber) ? PlateNumber : "";

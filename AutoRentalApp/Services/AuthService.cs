@@ -63,14 +63,11 @@ namespace AutoRentalApp.Services
             if (password != confirmPassword)
                 return (false, "Пароли не совпадают");
 
-            // Проверка уникальности логина
             if (_context.Users.Any(u => u.Login == login))
                 return (false, "Пользователь с таким логином уже существует");
 
-            // Хэширование пароля
             string passwordHash = HashPassword(password);
 
-            // Создание пользователя
             var user = new User
             {
                 FirstName = firstName,
@@ -83,10 +80,9 @@ namespace AutoRentalApp.Services
             try
             {
                 _context.Users.Add(user);
-                _context.SaveChanges(); // Сохраняем пользователя ДО создания зависимых записей
+                _context.SaveChanges(); // Сохраняем пользователя до создания зависимых записей
 
-                // ИСПРАВЛЕНО: Правильная логика для разных ролей
-                if (roleId == 3) // Клиент
+                if (roleId == 3) 
                 {
                     var client = new Client
                     {
@@ -98,7 +94,7 @@ namespace AutoRentalApp.Services
                     };
                     _context.Clients.Add(client);
                 }
-                else if (roleId == 2) // Менеджер
+                else if (roleId == 2) 
                 {
                     var manager = new Employee
                     {
@@ -108,8 +104,7 @@ namespace AutoRentalApp.Services
                     };
                     _context.Employees.Add(manager);
                 }
-                // Администраторы (roleId == 1) НЕ создают записей в employees!
-                // Это системные пользователи, они не оформляют договоры
+                // Администраторы не создают записей в employees 
 
                 _context.SaveChanges();
                 return (true, "Регистрация успешна!");
@@ -128,7 +123,6 @@ namespace AutoRentalApp.Services
             if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password))
                 return (false, "Логин и пароль обязательны", null);
 
-            // Хэширование введённого пароля для сравнения
             string passwordHash = HashPassword(password);
 
             // Поиск пользователя

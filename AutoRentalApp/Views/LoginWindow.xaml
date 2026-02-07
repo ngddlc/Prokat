@@ -16,7 +16,6 @@
         <!-- Шапка -->
         <Border Grid.Row="0" Background="#2196F3">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20,0,0,0">
-                <TextBlock Text="🚗" FontSize="36" Margin="0,0,10,0"/>
                 <StackPanel>
                     <TextBlock Text="Авто в прокат" FontSize="24" FontWeight="Bold" Foreground="White"/>
                     <TextBlock Text="Вход в систему" FontSize="14" Foreground="White" Opacity="0.9" Margin="0,2,0,0"/>

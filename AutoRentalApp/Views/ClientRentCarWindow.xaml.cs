@@ -113,7 +113,7 @@ namespace AutoRentalApp.Views
 
             if (manager == null)
             {
-                // Ищем администратора (RoleID = 1)
+                // Ищем администратора
                 var adminUser = _dbContext.Users.FirstOrDefault(u => u.RoleID == 1);
 
                 // Если администратора нет, создаем фейкового Заглушка
