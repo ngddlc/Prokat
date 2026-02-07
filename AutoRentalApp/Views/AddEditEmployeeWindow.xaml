@@ -1,0 +1,51 @@
+﻿<Window x:Class="AutoRentalApp.Views.AddEditEmployeeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Добавить сотрудника" Height="722" Width="529"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="15">
+        <StackPanel>
+            <TextBlock x:Name="TitleText" Text="Добавление нового сотрудника" 
+                       FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
+
+            <TextBlock Text="Фамилия" Style="{StaticResource FormLabel}"/>
+            <TextBox x:Name="LastNameBox" Style="{StaticResource FormTextBox}" FontSize="14"/>
+            <TextBlock x:Name="LastNameError" Foreground="Red" FontSize="11" Visibility="Collapsed" Margin="0,-8,0,0"/>
+
+            <TextBlock Text="Имя" Style="{StaticResource FormLabel}"/>
+            <TextBox x:Name="FirstNameBox" Style="{StaticResource FormTextBox}" FontSize="14"/>
+            <TextBlock x:Name="FirstNameError" Foreground="Red" FontSize="11" Visibility="Collapsed" Margin="0,-8,0,0"/>
+
+            <TextBlock Text="Логин" Style="{StaticResource FormLabel}"/>
+            <TextBox x:Name="LoginBox" Style="{StaticResource FormTextBox}" FontSize="14"/>
+            <TextBlock x:Name="LoginError" Foreground="Red" FontSize="11" Visibility="Collapsed" Margin="0,-8,0,0"/>
+
+            <TextBlock Text="Пароль" Style="{StaticResource FormLabel}"/>
+            <PasswordBox x:Name="PasswordBox" FontSize="14" Margin="0,4,0,8" Padding="8" 
+                         BorderBrush="#BDBDBD" BorderThickness="1"/>
+            <TextBlock x:Name="PasswordError" Foreground="Red" FontSize="11" Visibility="Collapsed" Margin="0,-8,0,0"/>
+
+            <TextBlock Text="Должность" Style="{StaticResource FormLabel}"/>
+            <TextBox x:Name="PositionBox" Style="{StaticResource FormTextBox}" FontSize="14"/>
+            <TextBlock x:Name="PositionError" Foreground="Red" FontSize="11" Visibility="Collapsed" Margin="0,-8,0,0"/>
+
+            <TextBlock Text="Дата приёма" Style="{StaticResource FormLabel}"/>
+            <!-- ИСПРАВЛЕНО: Убран стиль FormTextBox у DatePicker -->
+            <DatePicker x:Name="HireDatePicker" FontSize="14" Margin="0,4,0,8" Padding="8"/>
+            <TextBlock x:Name="HireDateError" Foreground="Red" FontSize="11" Visibility="Collapsed" Margin="0,-8,0,0"/>
+
+            <TextBlock Text="Роль" Style="{StaticResource FormLabel}"/>
+            <!-- ИСПРАВЛЕНО: Убран стиль FormTextBox у ComboBox -->
+            <ComboBox x:Name="RoleComboBox" FontSize="14" Margin="0,4,0,8" Padding="8"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                <Button x:Name="SaveButton" Content="СОХРАНИТЬ" Style="{StaticResource PrimaryButton}" 
+                        Click="SaveButton_Click" Width="120" Margin="0,0,10,0"/>
+                <Button Content="ОТМЕНА" Background="#9E9E9E" Style="{StaticResource PrimaryButton}" 
+                        Click="CancelButton_Click" Width="120"/>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
